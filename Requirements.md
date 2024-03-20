@@ -59,7 +59,7 @@ The Emotional Health Tracker is a web application that allows users to log their
 ## Technical Requirements
 
 ### 1. Front-end Technologies
-- The application will be built using modern front-end frameworks and libraries, such as React, Angular, or Vue.js.
+- The application will be built using modern front-end frameworks and libraries. I will be using Next.js
 - The user interface will be responsive and compatible with various devices and screen sizes.
 
 ### 2. Back-end Technologies
