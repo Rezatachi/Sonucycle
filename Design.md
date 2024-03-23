@@ -1,27 +1,29 @@
+
+
 ## Authentication (Login/Signup)
 
-For authentication, we'll be using Auth0, a flexible authentication and authorization platform. The login and signup pages will follow a consistent design with the landing page, maintaining the color scheme and overall aesthetic.
+For authentication, we'll be using Supabase, a flexible authentication and authorization platform. The login and signup pages will follow a consistent design with the landing page, maintaining the color scheme and overall aesthetic.
 
 ### Login Page
 
 1. **Header**: The header will display the 'Sonucycle' logo and a link to the signup page.
 2. **Login Form**: The center of the page will feature a card or container with the login form. This form should have the following fields:
-    - Email input field with appropriate validation
-    - Password input field with a toggle to show/hide the password
-    - "Remember Me" checkbox
-    - "Forgot Password" link
-    - Auth0 universal login button (configured to support various authentication providers like Google, Facebook, etc.)
+   - Email input field with appropriate validation
+   - Password input field with a toggle to show/hide the password
+   - "Remember Me" checkbox
+   - "Forgot Password" link
+   - Supabase universal login button (configured to support various authentication providers like Google, GitHub, etc.)
 3. **Footer**: The footer will display links to the Privacy Policy and Terms of Service.
 
 ### Signup Page
 
 1. **Header**: Similar to the login page, the header will display the 'Sonucycle' logo and a link to the login page.
 2. **Signup Form**: The center of the page will feature a card or container with the signup form. This form should have the following fields:
-    - Name input field
-    - Email input field with appropriate validation
-    - Password input field with a toggle to show/hide the password and password strength indicator
-    - Confirm Password input field
-    - Auth0 universal login button (configured for signup)
+   - Name input field
+   - Email input field with appropriate validation
+   - Password input field with a toggle to show/hide the password and password strength indicator
+   - Confirm Password input field
+   - Supabase universal login button (configured for signup)
 3. **Footer**: Similar to the login page, the footer will display links to the Privacy Policy and Terms of Service.
 
 Both the login and signup pages should have appropriate error and success messages, as well as loading indicators during the authentication process.
@@ -54,75 +56,93 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
 ```
 
-Each card component (e.g., `JournalEntryCard`, `EmotionalAnalysisCard`, etc.) will be responsible for rendering its respective functionality and will communicate with the backend (Node.js server) to fetch data, perform operations, and update the UI accordingly.
+Each card component (e.g., `JournalEntryCard`, `EmotionalAnalysisCard`, etc.) will be responsible for rendering its respective functionality and will communicate with the Supabase database and APIs using the `@supabase/supabase-js` client library.
 
-## Data Storage (MongoDB)
+## Data Storage (Supabase PostgreSQL)
 
-We'll be using MongoDB, a NoSQL database, to store user data, journal entries, and emotional logs. Here's an example of how the data models could be structured:
+We'll be using Supabase's PostgreSQL database to store user data, journal entries, emotional logs, playlists, and song information. Here's an example of how the data models could be structured:
 
-```jsx
-// User Model
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  profilePicture: { type: String },
-  journalEntries: [{ type: mongoose.Schema.Types.ObjectId, ref: 'JournalEntry' }],
-  emotionalLogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'EmotionalLog' }],
-  playlists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }]
-});
+```sql
+-- User Table
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  profile_picture TEXT
+);
 
-// Journal Entry Model
-const journalEntrySchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  content: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now },
-  tags: [{ type: String }],
-  emotionalState: { type: String }
-});
+-- Journal Entry Table
+CREATE TABLE journal_entries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  tags TEXT[],
+  emotional_state TEXT
+);
 
-// Emotional Log Model
-const emotionalLogSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  emotionalState: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now }
-});
+-- Emotional Log Table
+CREATE TABLE emotional_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  emotional_state TEXT NOT NULL,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-// Playlist Model
-const playlistSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  name: { type: String, required: true },
-  songs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Song' }]
-});
+-- Playlist Table
+CREATE TABLE playlists (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL
+);
 
-// Song Model
-const songSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  artist: { type: String, required: true },
-  album: { type: String },
-  genre: { type: String },
-  // Additional song metadata fields
-});
+-- Song Table
+CREATE TABLE songs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  artist TEXT NOT NULL,
+  album TEXT,
+  genre TEXT
+  -- Additional song metadata columns
+);
 
+-- Playlist Songs Junction Table
+CREATE TABLE playlist_songs (
+  playlist_id UUID REFERENCES playlists(id) ON DELETE CASCADE,
+  song_id UUID REFERENCES songs(id) ON DELETE CASCADE,
+  PRIMARY KEY (playlist_id, song_id)
+);
 ```
 
-These data models will be used to store and retrieve user data, journal entries, emotional logs, playlists, and song information.
+These data models will be used to store and retrieve user data, journal entries, emotional logs, playlists, and song information in Supabase's PostgreSQL database.
 
 ## Deployment
 
-For deployment, we'll be using a cloud platform or server infrastructure that can handle the expected user load and traffic. Here's an example of how we could deploy the 'Sonucycle' application using Vercel (a popular hosting platform for Next.js applications):
+For deployment, we'll be using Supabase's hosting platform or self-hosting the Supabase instance on a cloud provider like DigitalOcean, AWS, or GCP.
 
-1. **Connect Vercel to the project's Git repository**: This can be done by connecting Vercel to your GitHub, GitLab, or Bitbucket account and selecting the 'Sonucycle' repository.
-2. **Configure build settings**: Vercel will automatically detect the Next.js project and provide you with build settings. You may need to configure environment variables for your MongoDB connection string, Auth0 credentials, and any other third-party services you're using.
-3. **Deploy**: After configuring the build settings, you can trigger a deployment by pushing changes to your Git repository. Vercel will automatically build and deploy your application.
-4. **Set up custom domain (optional)**: If you want to use a custom domain for your application, you can configure it through the Vercel dashboard or command-line interface.
-5. **Continuous Deployment**: Vercel supports continuous deployment, which means that every time you push changes to your Git repository, Vercel will automatically rebuild and redeploy your application.
+1. **Supabase Hosting**:
+   - If using Supabase's managed hosting service, you'll need to create a new Supabase project and configure the necessary database tables and authentication providers.
+   - Supabase provides a dashboard and CLI tools for managing your project, including setting up database migrations, policies, and authentication providers.
 
-For a future desktop app version, you can consider using Electron.js, a framework for building cross-platform desktop applications using web technologies like HTML, CSS, and JavaScript. Electron.js allows you to package your Next.js application as a desktop app, providing a native experience for users.
+2. **Self-Hosting**:
+   - Alternatively, you can self-host the Supabase instance on your preferred cloud provider or infrastructure.
+   - Follow the Supabase documentation to install and configure the Supabase platform, including the PostgreSQL database, authentication server, and storage service.
 
-Additionally, you may need to adapt the design and user interface to better suit the desktop environment, such as implementing keyboard shortcuts, context menus, and other desktop-specific features.
+3. **Next.js Integration**:
+   - In your Next.js application, you'll need to import the `@supabase/supabase-js` library and initialize the Supabase client with your project's URL and authentication keys.
+   - You can then use the Supabase client to interact with the database (querying, inserting, updating data), authenticate users, and subscribe to real-time database changes.
 
-This design document covers the authentication process, dashboard structure, data storage models, deployment process, and considerations for a future desktop app version. It should provide a solid blueprint for implementing the 'Sonucycle' application using the specified technologies and best practices.
+4. **Vercel Deployment**:
+   - For deploying the Next.js application, you can use Vercel, a popular hosting platform for Next.js applications.
+   - Connect Vercel to your project's Git repository and configure the build settings, including any necessary environment variables for your Supabase project URL and authentication keys.
+   - Trigger a deployment by pushing changes to your Git repository, and Vercel will automatically build and deploy your application.
+
+5. **Custom Domain and Continuous Deployment**:
+   - Similar to the previous design document, you can set up a custom domain and enable continuous deployment with Vercel.
+
+For a future desktop app version, you can still consider using Electron.js to package your Next.js application as a desktop app, leveraging the Supabase integration for data storage and authentication.
+
+This updated design document outlines the integration with Supabase for authentication, data storage using PostgreSQL, and deployment options, including Supabase's managed hosting or self-hosting on a cloud provider. It should provide a solid blueprint for implementing the 'Sonucycle' application using Supabase as the primary backend service.
