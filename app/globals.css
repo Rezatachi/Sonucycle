@@ -20,6 +20,23 @@
   }
 }
 
+@font-face {
+  font-family: 'Alike';
+  src: url('/fonts/alike-regular.ttf') format('ttf'),
+       url('/fonts/alike-regular.ttf') format('ttf');
+  /* Add more font formats if needed */
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+/* remove scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+
+
 @layer base {
   * {
     @apply border-foreground/20;
@@ -48,6 +65,7 @@ body {
   animation: gradientAnimation 30s ease infinite;
   padding: 2rem;
   border-radius: 8px;
+
 }
 
 @keyframes gradientAnimation {

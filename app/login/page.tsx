@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { headers } from "next/headers";
 import { createClient} from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "./submit-button";
-import { supabase, } from "@supabase/auth-ui-shared";
 
 export default function Login({ searchParams }: { searchParams: { message: string } }) {
   const signIn = async (formData: FormData) => {
@@ -13,26 +11,11 @@ export default function Login({ searchParams }: { searchParams: { message: strin
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      return redirect("/login?message=Could not authenticate user");
+      return redirect(`/login?message=${error}`);
     }
     return redirect("/protected");
   };
   
-
-  // handle google sign in
-  // async function handleSignInWithGoogle(response: any) {
-  //   const supabase = createClient();
-  //   const { data, error } = await supabase.auth.signInWithIdToken({
-  //     provider: "google",
-  //     token: response.credential,
-  //     nonce : 'NONCE',
-  //   })
-  //   if (error) {
-  //     return redirect("/login?message=Could not authenticate user");
-  //   }
-  //   return redirect("/protected");
-  // }
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <nav>
@@ -59,7 +42,7 @@ export default function Login({ searchParams }: { searchParams: { message: strin
       </nav>
       <div className="bg-white border border-gray-300 rounded-lg p-6">
         {/* create text saying "Sign into your account! Center in box" */}
-        <h1 className="text-2xl font-bold mb-6 text-[#3e4e50] text-center">Sign into your account!</h1>
+        <h1 className="text-2xl font-bold mb-3 text-[#3e4e50] text-center">Sign into your account!</h1>
         {/* create a form with email and password fields */}
         
         <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground text-black">
