@@ -4,7 +4,6 @@ import { createClient} from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "./submit-button";
 import { supabase, } from "@supabase/auth-ui-shared";
-import Toast from "@/components/Toast";
 
 export default function Login({ searchParams }: { searchParams: { message: string } }) {
   const signIn = async (formData: FormData) => {
@@ -18,6 +17,7 @@ export default function Login({ searchParams }: { searchParams: { message: strin
     }
     return redirect("/protected");
   };
+  
 
   // handle google sign in
   // async function handleSignInWithGoogle(response: any) {
@@ -59,7 +59,7 @@ export default function Login({ searchParams }: { searchParams: { message: strin
       </nav>
       <div className="bg-white border border-gray-300 rounded-lg p-6">
         {/* create text saying "Sign into your account! Center in box" */}
-        <h1 className="text-2xl font-semibold text-black text-center">Sign into your account!</h1>
+        <h1 className="text-2xl font-bold mb-6 text-[#3e4e50] text-center">Sign into your account!</h1>
         {/* create a form with email and password fields */}
         
         <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground text-black">
@@ -99,11 +99,22 @@ export default function Login({ searchParams }: { searchParams: { message: strin
             </span>{" "}
             to Sign Up
           </Link></p>
+          {/* reset password component */}
+          <p className="text-sm text-black">
+            Forgot your password? Click
+          <Link href="/reset">
+          <span
+              className="text-blue-500 cursor-pointer"
+            > here 
+          </span>{" "} 
+            to reset it</Link></p>
         </form>
         {/* add toast */}
-        {searchParams?.message && (
-          <Toast message={searchParams.message} />
-        )}
+        {searchParams?.message &&
+                    // write a nice blurry div with the message
+                    <div className="animate-in bg-black bg-opacity-40 text-white mt-2 p-2 rounded-md text-center">
+                        {searchParams.message}
+                    </div>}
       </div>
     </div>
   );

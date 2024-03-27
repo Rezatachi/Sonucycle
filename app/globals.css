@@ -45,7 +45,7 @@ body {
   /* Apply gradient animation to the body */
   background: linear-gradient(to bottom left, #f2aa7e, #f5ac72, #f8bd7f, #facfad, #3e4e50);
   background-size: 400% 400%;
-  animation: gradientAnimation 10s ease infinite;
+  animation: gradientAnimation 30s ease infinite;
   padding: 2rem;
   border-radius: 8px;
 }
