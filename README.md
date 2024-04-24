@@ -1,4 +1,9 @@
-# Requirements Document: Emotional Health Tracker
+## Requirements Document: Emotional Health Tracker
+
+# Read HERE BEFORE CONTINUING
+- https://www.hume.ai/products
+- https://supabase.com/docs
+- https://nextjs.org/learn?utm_source=next-site&utm_medium=homepage-cta&utm_campaign=home
 
 ## Overview
 The Emotional Health Tracker is a web application that allows users to log their daily activities, interactions, or journal entries. The application will use the Hume AI emotion expression model to analyze the emotional patterns and provide insights, recommendations, and alerts related to the user's emotional well-being over time. Additionally, the application will incorporate a feature to recommend songs based on the user's detected emotional state.
